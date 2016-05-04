@@ -25,8 +25,8 @@ int desencripta (int valor){
 void iniciarPartida (){
   sumaMans = 0;
   for (int i = 0; i < NUM_JUGADORS; ++i){ 
-    idsMans [i] = 100 + i + 1;
-    aposta [i] = 200 + i + 1;
+    idsMans [i] = 100 + (i + 1)*10;
+    aposta [i] = 200 + (i + 1)*10;
   }
 }
 

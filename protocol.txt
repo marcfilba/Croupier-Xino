@@ -1,9 +1,17 @@
-1 - El croupier envia un missatge amb id 100 (què teniu a la mà?) 
-2 - Els jugadors contesten amb id 100 + n (on n és el número de grup) indicant què tenen a la mà. Cada grup tindrà una clau amb la qual encriptarà aquest missatge
-3 - El croupier envia un missatge amb id 200 (feu les apostes) 
-4 - Els jugadors contesten amb id 200 + n (on n és el número de grup) indicat la seva primer aposta
-5 - El croupier torna a enviar un missatge amb id 200 (torneu a fer les apostes)
-6 - Els jugadors contesten amb id 200 + n (on n és el número de grup) indicat la seva aposta final
-7 - El croupier envia un missatge amb id 300 indicant qui ha estat el guanyador
+Les dades que cal enviar han de ser signed integer.
+Tothom té 3 monedes. Les apostes poden ser 0,1,2,3. Les monedes no es perden tot i perdre la ronda.
 
-- Es torna a repetir la seqüència
+Tots els grups que encertin l'aposta guanyen 2 punts. 
+Si ningú encerta, el grup/s que més s'acosti guanya 1 punt. Guanya el que obtingui més punts.
+
+1 - El croupier envia un missatge amb id 100 (què teniu a la mà?) 
+2 - Els jugadors contesten amb id 100 + n*10 (on n és el número de grup) indicant què tenen a la mà. Cada grup tindrà una clau amb la qual encriptarà aquest missatge
+
+3 - El croupier envia un missatge amb id 200 (feu les apostes) 
+4 - Els jugadors contesten amb id 200 + n*10 (on n és el número de grup) indicat la seva primer aposta no encriptada
+
+5 - El croupier torna a enviar un missatge amb id 300 al cap de 500 ms (torneu a fer les apostes)
+6 - Els jugadors contesten amb id 300 + n*10 (on n és el número de grup) indicat la seva aposta final no encriptada amb un timeout maxim de 500 ms
+7 - El croupier envia un missatge amb id 400 indicant qui ha estat el guanyador
+
+- Es torna a repetir la seqüència després de 500 ms
