@@ -34,9 +34,9 @@ class SerialThread(Thread):
 
     def getDataFromSerial (self):
         while not thread_stop_event.isSet():
-            number = round(random()*10, 3)
-            print number
-            socketio.emit('newnumber', {'number': number}, namespace='/test')
+            data = '1,2,3,4'
+            print data
+            socketio.emit('newMsg', {'data': data}, namespace='/test')
 	    sleep(self.delay)
 
     def run(self):
