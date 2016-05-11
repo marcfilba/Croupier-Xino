@@ -9,12 +9,18 @@ Aim is to create a webpage that is constantly updated with random numbers from a
 # Start with a basic flask app webpage.
 from flask.ext.socketio import SocketIO, emit
 from flask import Flask, render_template, url_for, copy_current_request_context
-from random import random
 from time import sleep
 from threading import Thread, Event
 
+import serial
+import select
 
-__author__ = 'slynn'
+serialPort = '/dev/ttyACM0'
+baudRate = 115200
+
+ser = serial.Serial(serialPort, baudRate)
+
+players = 0
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -34,9 +40,9 @@ class SerialThread(Thread):
 
     def getDataFromSerial (self):
         while not thread_stop_event.isSet():
-            data = '1,2,3,4'
-            print data
-            socketio.emit('newMsg', {'data': data}, namespace='/test')
+            rawData = ser.readline().rstrip()
+            rawDataSplitted = rawData.split (",")
+            socketio.emit('newMsg', {'data': rawDataSplitted, 'players': players}, namespace='/test')
 	    sleep(self.delay)
 
     def run(self):
@@ -45,7 +51,8 @@ class SerialThread(Thread):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+		players = ser.readline().rstrip()	# llegim accel, gyro i temp
+        return render_template('index' + str(players) + '.html')
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
