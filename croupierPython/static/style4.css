@@ -5,6 +5,7 @@ body{
     text-align: left;
 }
 
+
 .a-leftin {
     text-align: left !important;
 }
@@ -119,7 +120,7 @@ body{
     font: normal 1.2em/45px Arial, sans-serif;
     color: #797979;
     float: left;
-    width: 17.8%;
+    width: 21.8%;
     border-left: 1px solid #fff;
     border-bottom: 1px solid #fff;
 }
@@ -133,6 +134,7 @@ body{
 .sizeGuide .rightContent .bodySize ul.locked{
     height: 625px;
     overflow: scroll;
+	overflow: -moz-scrollbars-none;
 }
 .sizeGuide .rightContent .bodySize ul li .headSizes {
     background-color: #eaeaea;
