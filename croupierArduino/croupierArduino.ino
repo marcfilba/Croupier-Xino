@@ -21,18 +21,64 @@ unsigned char len = 0;
 unsigned char rxBuf;
 
 MCP_CAN CAN0 (10);
-
+/*************
+ * G1: 11 17 2  = 30
+ * G2: 43 9 14  = 66
+ * G3: 25 17 47 = 89
+ * G4: 39 46 23 = 108
+ * G5: 58 13 28 = 99
+ *************/
 int desencripta (int valor) {
   switch (rxId) {
-    /*case 110: return valor;
-      case 120: return valor;
-      case 130: return valor;
-      case 140: return valor;
-      case 150: return valor;*/
+   
+      case 110:  
+            valor1 = valor - 11;
+            valor2 = valor - 17;
+            valor3 = valor - 2;
+            if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
+            else if (valor2 >= 0 && valor2 <=3 ) valor = valor2;
+            else if (valor3 >= 0 && valor3 <=3 ) valor = valor3;
+            else valor = 0;
+            return valor;
+      case 120:
+            valor1 = valor - 43;
+            valor2 = valor - 9;
+            valor3 = valor - 14;
+            if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
+            else if (valor2 >= 0 && valor2 <=3 ) valor = valor2;
+            else if (valor3 >= 0 && valor3 <=3 ) valor = valor3;
+            else valor = 0;
+            return valor;
+      case 130: 
+            valor1 = valor - 25;
+            valor2 = valor - 17;
+            valor3 = valor - 47;
+            if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
+            else if (valor2 >= 0 && valor2 <=3 ) valor = valor2;
+            else if (valor3 >= 0 && valor3 <=3 ) valor = valor3;
+            else valor = 0;
+            return valor;
+      case 140: 
+            valor1 = valor - 39;
+            valor2 = valor - 46;
+            valor3 = valor - 23;
+            if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
+            else if (valor2 >= 0 && valor2 <=3 ) valor = valor2;
+            else if (valor3 >= 0 && valor3 <=3 ) valor = valor3;
+            else valor = 0;
+            return valor;
+      case 150:
+            valor1 = valor - 58;
+            valor2 = valor - 13;
+            valor3 = valor - 28;
+            if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
+            else if (valor2 >= 0 && valor <=3 ) valor = valor2;
+            else if (valor3 >= 0 && valor <=3 ) valor = valor3;
+            else valor = 0;
+            return valor;
     default: return valor;
   }
 }
-
 void iniciarPartida () {
   sumaMans = 0;
   Serial.println("inici partida");
