@@ -4,8 +4,8 @@ $(document).ready(function(){
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
     var ronda = [];
     var data_received = [];
-    var teams = ["Grup 1", "Team Rocket","Los Petadores", "Los Angeles de Llaberia", "Blob", "La Banca"]
-    var punts = [0,0,0,0,0,0]
+    var teams = ["Hold the Door", "Team Rocket","Los Petadores", "Los Angeles de Llaberia", "Blob", "La Banca"]
+    var punts = [0,0,0]
 
     //receive details from server
     socket.on('newMsg', function(msg) {

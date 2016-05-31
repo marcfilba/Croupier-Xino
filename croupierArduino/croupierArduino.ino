@@ -1,7 +1,7 @@
 #include <mcp_can.h>
 #include <SPI.h>
 
-#define NUM_JUGADORS 1
+#define NUM_JUGADORS 6
 
 int idsMans [NUM_JUGADORS];
 int idsApostaInicial [NUM_JUGADORS];
@@ -21,29 +21,35 @@ unsigned char len = 0;
 unsigned char rxBuf;
 
 MCP_CAN CAN0 (10);
+
 /*************
- * G1: 11 17 2  = 30
- * G2: 43 9 14  = 66
- * G3: 25 17 47 = 89
- * G4: 39 46 23 = 108
- * G5: 58 13 28 = 99
+ * G1: 11 17 2
+ * G2: 43 9 14
+ * G3: 25 17 47
+ * G4: 39 46 23
+ * G5: 23 30 72
  *************/
+
+ int valor1, valor2, valor3;
 int desencripta (int valor) {
   switch (rxId) {
    
-      case 110:  
+      case 110:              
             valor1 = valor - 11;
             valor2 = valor - 17;
             valor3 = valor - 2;
+            
             if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
             else if (valor2 >= 0 && valor2 <=3 ) valor = valor2;
             else if (valor3 >= 0 && valor3 <=3 ) valor = valor3;
             else valor = 0;
+            
             return valor;
       case 120:
             valor1 = valor - 43;
             valor2 = valor - 9;
             valor3 = valor - 14;
+
             if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
             else if (valor2 >= 0 && valor2 <=3 ) valor = valor2;
             else if (valor3 >= 0 && valor3 <=3 ) valor = valor3;
@@ -68,12 +74,12 @@ int desencripta (int valor) {
             else valor = 0;
             return valor;
       case 150:
-            valor1 = valor - 58;
-            valor2 = valor - 13;
-            valor3 = valor - 28;
+            valor1 = valor - 23;
+            valor2 = valor - 30;
+            valor3 = valor - 72;
             if (valor1 >= 0 && valor1 <= 3 ) valor = valor1;
-            else if (valor2 >= 0 && valor <=3 ) valor = valor2;
-            else if (valor3 >= 0 && valor <=3 ) valor = valor3;
+            else if (valor2 >= 0 && valor2 <=3 ) valor = valor2;
+            else if (valor3 >= 0 && valor3 <=3 ) valor = valor3;
             else valor = 0;
             return valor;
     default: return valor;
@@ -81,6 +87,7 @@ int desencripta (int valor) {
 }
 void iniciarPartida () {
   sumaMans = 0;
+  numJugadors = 0;
   Serial.println("inici partida");
   for (int i = 0; i < NUM_JUGADORS; ++i) {
     idsMans [i]          = 100 + (i + 1) * 10;
@@ -92,11 +99,12 @@ void iniciarPartida () {
 
 void llegeixMans () {
   Serial.println("llegeix Mans");
+  unsigned int m = millis ();
   
   CAN0.sendMsgBuf(100, 0, 1, &zero);
   delay(100);
   
-  while (numJugadors != NUM_JUGADORS) {
+  while (numJugadors != NUM_JUGADORS and (m + 1000) > millis()) {
     llegeixCan();
     for (int i = 0; i < NUM_JUGADORS; ++i) {
       if ((rxId == idsMans [i]) && (idsMans [i] != -1)) {
@@ -115,8 +123,7 @@ void llegeixMans () {
 void llegeixCan () {
 
   if (CAN_MSGAVAIL == CAN0.checkReceive ()){
-    CAN0.readMsgBuf(&len, &rxBuf);
-    rxId = CAN0.getCanId();
+    CAN0.readMsgBufID(&rxId, &len, &rxBuf);
     Serial.print ("rebut missatge amb ID = "); Serial.println (rxId);
   }
 }
@@ -128,7 +135,8 @@ void llegeixApostaInicial () {
   delay(100);
 
   numJugadors = 0;
-  while (numJugadors != NUM_JUGADORS) {
+  unsigned int m = millis ();
+  while (numJugadors != NUM_JUGADORS and (m + 1000) > millis()) {
     llegeixCan();
     
     for (int i = 0; i < NUM_JUGADORS; ++i) {
@@ -150,7 +158,8 @@ void llegeixApostaFinal () {
   delay(100);
 
   numJugadors = 0;
-  while (numJugadors != NUM_JUGADORS) {
+  unsigned int m = millis ();
+  while (numJugadors != NUM_JUGADORS and (m + 1000) > millis()) {
     llegeixCan();
     
     for (int i = 0; i < NUM_JUGADORS; ++i) {
@@ -179,7 +188,14 @@ void obtenGuanyador () {
 
   if (!guanyador) {
     for (int i = 0; i < NUM_JUGADORS; ++i) diff = min (diff, abs(sumaMans - apostaFinal [i]));
-    for (int i = 0; i < NUM_JUGADORS; ++i) if (apostaFinal [i] == diff) punts[i] = 1;
+
+    Serial.print ("diff ");
+    Serial.println (diff);
+  
+    for (int i = 0; i < NUM_JUGADORS; ++i){
+      if (apostaFinal [i] - sumaMans == diff) punts[i] = 1;
+      else if (apostaFinal [i] + sumaMans == diff) punts[i] = 1;
+    }
   }
 }
 
@@ -195,7 +211,7 @@ void notificaPuntuacio () {
   for (int i = 0; i < NUM_JUGADORS; ++i) {
     CAN0.sendMsgBuf(400 + (i + 1) * 10, 0, 1, &punts[i]);
   }
-  delay(100);
+  delay(50);
 }
 
 void setup() {
@@ -216,6 +232,4 @@ void loop() {
   obtenGuanyador ();        // CALCULA EL DIFF I AGAFA EL MENOR
   actualitzaMarcador ();    // ENVIA PER SERIE LES N APOSTES A LA INTERFÍCIE GRÀFICA
   notificaPuntuacio ();     // ENVIA PER CAN LA PUNTUACIÓ DE CADA GRUP
-
-  delay (500);
 }

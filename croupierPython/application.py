@@ -8,11 +8,11 @@ from threading import Thread, Event
 import serial
 import select
 
-#serialPort = '/dev/ttyACM0'
+serialPort = '/dev/ttyACM0'
 baudRate = 115200
-#ser = serial.Serial(serialPort, baudRate)
+ser = serial.Serial(serialPort, baudRate)
 
-players = 6
+players = 3
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -29,12 +29,16 @@ class SerialThread(Thread):
         self.delay = 0.5
         super(SerialThread, self).__init__()
 
+        ser.write('s')
+        print 'Start'
+
     def getDataFromSerial (self):
         while not thread_stop_event.isSet():
             rawData = ''
             while len(rawData.split(',')) != players:
-                #rawData = ser.readline().rstrip()
-                rawData = '1,2,3,4,5,6'
+                print rawData
+                rawData = ser.readline().rstrip()
+                #rawData = '1,2,3,4,5,6'
             socketio.emit('newMsg', {'data': rawData, 'players': players}, namespace='/test')
             sleep(self.delay)
 

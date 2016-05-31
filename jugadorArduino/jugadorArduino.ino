@@ -50,13 +50,13 @@ void loop() {
           Serial.println (rxBuf);
           break;
       }
-      /*default:{
+      default:{
         Serial.print ("ID rebut: ");
         Serial.println (CAN0.getCanId());
         Serial.print ("Data rebuda: ");
         Serial.println (rxBuf);
         break;
-      }*/
+      }
     }
   }
 }
